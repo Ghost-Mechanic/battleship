@@ -15,6 +15,8 @@ test('sunk is true when ship has been hit enough times', () => {
     expect(myShip.isSunk()).toBe(true);
 });
 
+// test factory functions
+
 test('carrier factory function returns ship with correct length', () => {
     const carrier = createCarrier();
     expect(carrier.length).toBe(5);
