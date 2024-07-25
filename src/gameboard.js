@@ -45,6 +45,7 @@ class Gameboard {
         this.cruiser = createCruiser();
         this.submarine = createSubmarine();
         this.destroyer = createDestroyer();
+        this.missedCoords = [];
     }
 
     // these functions place a ship at a given coordinate with a given orientation
@@ -163,6 +164,53 @@ class Gameboard {
 
         return false;
     }
+
+    // receives an attack on a pair of coordinates and determines whether or not it hit a ship
+    receiveAttack(coord) {
+        const attackIndex = coordToIndex(coord);
+
+        // use switch statement to call hit on correct ship when it is hit and mark hits with an X
+        switch (this.board[attackIndex]) {
+            case 'C':
+                this.carrier.hit();
+                this.board[attackIndex] = 'X';
+                break;
+            case 'B':
+                this.battleship.hit();
+                this.board[attackIndex] = 'X';
+                break;
+            case 'R':
+                this.cruiser.hit();
+                this.board[attackIndex] = 'X';
+                break;
+            case 'S':
+                this.submarine.hit();
+                this.board[attackIndex] = 'X';
+                break;
+            case 'D':
+                this.destroyer.hit();
+                this.board[attackIndex] = 'X';
+                break;
+            default:
+                this.board[attackIndex] = 'M';
+                this.missedCoords.push(attackIndex);
+        }
+    }
+
+    // return true if all ships are sunk
+    allShipsSunk() {
+        if (this.carrier.isSunk() && 
+            this.battleship.isSunk() && 
+            this.cruiser.isSunk() &&
+            this.submarine.isSunk() &&
+            this.destroyer.isSunk()) 
+            {
+                return true;
+        }
+
+        return false;
+    }
+
 }
 
 export { Gameboard, coordToIndex, placementValid };
