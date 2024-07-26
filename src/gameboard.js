@@ -210,7 +210,10 @@ class Gameboard {
 
         return false;
     }
-
 }
 
-export { Gameboard, coordToIndex, placementValid };
+function createPlayer(human) {
+    return new Gameboard();
+}
+
+export { Gameboard, coordToIndex, placementValid, createPlayer };

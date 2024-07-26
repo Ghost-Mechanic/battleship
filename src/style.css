@@ -1,0 +1,16 @@
+body {
+    display: flex;
+    gap: 200px;
+    justify-content: center;
+}
+
+.gameboard-container,
+.second-gameboard-container {
+    display: grid;
+    grid-template-columns: repeat(11, 60px);
+    grid-template-rows: repeat(11, 60px);
+}
+
+.gameboard-item {
+    border: solid 1px black;
+}
