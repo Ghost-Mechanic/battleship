@@ -36,6 +36,25 @@ function createBoardOnDOM(player, gameboard, boardContainer) {
     }
 }
 
+// this function displays the correct boards based on whos turn it is
+// basically makes the opposing player's board invisible except for known hits and misses
+function displayPlayerBoard(playerOneTurn, playerOne, playerTwo) {
+    const playerOneBoard = document.querySelectorAll('.gameboard-container .gameboard-box');
+    const playerTwoBoard = document.querySelectorAll('.second-gameboard-container .gameboard-box');
+    const playerOneBoardArray = Array.from(playerOneBoard);
+    const playerTwoBoardArray = Array.from(playerTwoBoard);
+
+    // call updateBoard for the correct player's boards
+    if (playerOneTurn) {
+        updateBoard(playerOne, playerOneBoardArray);
+        updateBoardForOpp(playerTwo, playerTwoBoardArray);
+    }
+    else {
+        updateBoard(playerTwo, playerTwoBoardArray);
+        updateBoardForOpp(playerOne, playerOneBoardArray)
+    }
+}
+
 // this function places the ship on the DOM given the type of ship, the player, and the player's board
 function placeShipOnDOM(ship, player, gameboard) {
     if (ship === 'C') {
@@ -59,7 +78,7 @@ function placeShipOnDOM(ship, player, gameboard) {
 }
 
 // this function adds event listeners to each of the boxes in the given array that run the game
-function addBoxListeners(player, playerBoxesArray, playerOneTurn) {
+function addBoxListeners(player, playerBoxesArray, playerOneTurn, playerOne, playerTwo) {
     for (const box of playerBoxesArray) {
         box.addEventListener("click", () => {
             // call the receiveAttack function for the given player and update the board for that player
@@ -94,6 +113,8 @@ function addBoxListeners(player, playerBoxesArray, playerOneTurn) {
             if (player.allShipsSunk()) {
                 handleWin(playerOneTurn, currBoxesArray);
             }
+
+            displayPlayerBoard(!playerOneTurn, playerOne, playerTwo);
         });
     }
 }
@@ -120,6 +141,30 @@ function updateBoard(player, gameboard) {
     }
 }
 
+// this function updates the board to display the opponent's board, only showing hits and misses
+function updateBoardForOpp(player, gameboard) {
+    // iterate through the board to ensure the DOM display matches the class board
+    for (let i = 0; i < gameboard.length; ++i) {
+        if (player.board[i] !== 0) {
+            gameboard[i].textContent = '';
+
+            // add the correct class to each box depending on it's symbol on the board
+            switch (player.board[i]) {
+                case 'X':
+                    gameboard[i].textContent = player.board[i];
+                    gameboard[i].classList.add('hit');
+                    break;
+                case 'M':
+                    gameboard[i].textContent = player.board[i];
+                    gameboard[i].classList.add('miss');
+                    break;
+                default:
+                    gameboard[i].classList.remove('ship');
+            }
+        }
+    }
+}
+
 // handle the victory by disabling the rest of the buttons and displaying a message
 function handleWin(playerOneTurn, currBoxesArray) {
     for (const box of currBoxesArray) {
@@ -138,4 +183,4 @@ function handleWin(playerOneTurn, currBoxesArray) {
     document.body.appendChild(winMessage);
 }
 
-export { createBoardOnDOM, placeShipOnDOM, addBoxListeners };
+export { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard };
