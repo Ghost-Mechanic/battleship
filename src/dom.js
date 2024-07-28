@@ -114,11 +114,65 @@ function addBoxListeners(player, playerBoxesArray, playerOneTurn, playerOne, pla
                 if (player.allShipsSunk()) {
                     handleWin(playerOneTurn, currBoxesArray);
                 }
-
-                //displayPlayerBoard(!playerOneTurn, playerOne, playerTwo);
-                turnScreen(playerOneTurn, playerOne, playerTwo);
+                else {
+                    turnScreen(playerOneTurn, playerOne, playerTwo);
+                }
             }
         });
+    }
+}
+
+// this function adds the box listeners to the boards for playing against the computer
+function addBoxListenersBot(player, playerBoxesArray, playerOneTurn, playerOne, playerTwo, possibleBotAttacks) {
+    for (const box of playerBoxesArray) {
+        box.addEventListener("click", () => {
+            // only run event listener if the box clicked on has not been attacked already
+            if (!player.usedCoords.includes(coordToIndex(box.dataset.coord))) {
+                // call the receiveAttack function for the given player and update the board for that player
+                player.receiveAttack(box.dataset.coord);
+                updateBoardForOpp(player, playerBoxesArray);
+
+                let currBoxes = document.querySelectorAll('.gameboard-container .gameboard-box');
+                let currBoxesArray = Array.from(currBoxes);
+
+                // handle victory if game is over
+                if (playerTwo.allShipsSunk()) {
+                    handleWin(playerOneTurn, currBoxesArray);
+
+                    // disable event listeners for the opposing board
+                    const opposingBoard = document.querySelectorAll('.second-gameboard-container .gameboard-box');
+                    const opposingBoardArray = Array.from(opposingBoard);
+                    for (const box of opposingBoardArray) {
+                        box.style.pointerEvents = 'none';
+                    }
+                }
+                else {
+                    botAttack(playerOne, possibleBotAttacks, currBoxesArray);
+                }
+            }
+        });
+    }
+}
+
+// this function has the opposing bot player pick a random spot to attack from its array of possible attacks
+function botAttack(playerOne, possibleBotAttacks, currBoxesArray) {
+    // get random attack from array and remove it so that it is not repeated
+    const randomAttack = possibleBotAttacks[Math.floor(Math.random() * possibleBotAttacks.length)];
+    possibleBotAttacks.splice(possibleBotAttacks.indexOf(randomAttack), 1);
+
+    playerOne.receiveAttack(randomAttack);
+    updateBoard(playerOne, currBoxesArray);
+
+    // handle victory if game is over
+    if (playerOne.allShipsSunk()) {
+        handleWin(false, currBoxesArray);
+        
+        // disable event listeners for the opposing board
+        const opposingBoard = document.querySelectorAll('.second-gameboard-container .gameboard-box');
+        const opposingBoardArray = Array.from(opposingBoard);
+        for (const box of opposingBoardArray) {
+            box.style.pointerEvents = 'none';
+        }
     }
 }
 
@@ -219,4 +273,4 @@ function turnScreen(playerOneTurn, playerOne, playerTwo) {
     });
 }
 
-export { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard };
+export { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard, addBoxListenersBot };

@@ -38,9 +38,10 @@ function placementValid(index, vertical, length, board) {
 }
 
 class Gameboard {
-    constructor() {
+    constructor(human) {
         this.board = Array(100).fill(0);
         this.carrier = createCarrier();
+        this.human = human
         this.battleship = createBattleship();
         this.cruiser = createCruiser();
         this.submarine = createSubmarine();
@@ -222,7 +223,7 @@ class Gameboard {
 }
 
 function createPlayer(human) {
-    return new Gameboard();
+    return new Gameboard(human);
 }
 
 export { Gameboard, coordToIndex, placementValid, createPlayer };
