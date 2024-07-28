@@ -83,7 +83,6 @@ function addBoxListeners(player, playerBoxesArray, playerOneTurn, playerOne, pla
         box.addEventListener("click", () => {
             // call the receiveAttack function for the given player and update the board for that player
             player.receiveAttack(box.dataset.coord);
-            console.log(playerOneTurn);
             updateBoard(player, playerBoxesArray);
 
             let currBoard;
@@ -114,7 +113,8 @@ function addBoxListeners(player, playerBoxesArray, playerOneTurn, playerOne, pla
                 handleWin(playerOneTurn, currBoxesArray);
             }
 
-            displayPlayerBoard(!playerOneTurn, playerOne, playerTwo);
+            //displayPlayerBoard(!playerOneTurn, playerOne, playerTwo);
+            turnScreen(playerOneTurn, playerOne, playerTwo);
         });
     }
 }
@@ -181,6 +181,39 @@ function handleWin(playerOneTurn, currBoxesArray) {
     }
 
     document.body.appendChild(winMessage);
+}
+
+// this screen shows up once a turn is complete, with a button to move on to the next turn
+// so that the players cannot see each other's boards
+function turnScreen(playerOneTurn, playerOne, playerTwo) {
+    // start off by hiding the boards
+    const leftBoard = document.querySelector('.gameboard-container');
+    const rightBoard = document.querySelector('.second-gameboard-container');
+    leftBoard.style.display = 'none';
+    rightBoard.style.display = 'none';
+
+    // create new elements for the turn screen
+    const turnTitle = document.createElement('h1');
+    turnTitle.textContent = 'Pass Device';
+
+    const turnDescription = document.createElement('h3');
+    turnDescription.textContent = 'Pass the device to the opposing player! When you are ready for the next turn click the button';
+
+    const turnButton = document.createElement('button');
+    turnButton.textContent = 'Next Turn';
+
+    document.body.append(turnTitle, turnDescription, turnButton);
+
+    // event listener to turn button makes the boards reappear and updates them
+    turnButton.addEventListener('click', () => {
+        turnTitle.remove();
+        turnDescription.remove();
+        turnButton.remove();
+
+        leftBoard.style.display = 'grid';
+        rightBoard.style.display = 'grid';
+        displayPlayerBoard(!playerOneTurn, playerOne, playerTwo);
+    });
 }
 
 export { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard };
