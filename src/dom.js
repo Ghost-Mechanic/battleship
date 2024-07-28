@@ -64,6 +64,7 @@ function addBoxListeners(player, playerBoxesArray, playerOneTurn) {
         box.addEventListener("click", () => {
             // call the receiveAttack function for the given player and update the board for that player
             player.receiveAttack(box.dataset.coord);
+            console.log(playerOneTurn);
             updateBoard(player, playerBoxesArray);
 
             let currBoard;
@@ -87,6 +88,11 @@ function addBoxListeners(player, playerBoxesArray, playerOneTurn) {
             // enable opponent boxes after taking turn
             for (const box of currBoxesArray) {
                 box.style.pointerEvents = 'auto';
+            }
+
+            // handle victory if game is over
+            if (player.allShipsSunk()) {
+                handleWin(playerOneTurn, currBoxesArray);
             }
         });
     }
@@ -112,6 +118,24 @@ function updateBoard(player, gameboard) {
             }
         }
     }
+}
+
+// handle the victory by disabling the rest of the buttons and displaying a message
+function handleWin(playerOneTurn, currBoxesArray) {
+    for (const box of currBoxesArray) {
+        box.style.pointerEvents = 'none';
+    }
+
+    const winMessage = document.createElement('div');
+
+    if (playerOneTurn) {
+        winMessage.textContent = 'Player 1 has won!';
+    }
+    else {
+        winMessage.textContent = 'Player 2 has won!';
+    }
+
+    document.body.appendChild(winMessage);
 }
 
 export { createBoardOnDOM, placeShipOnDOM, addBoxListeners };
