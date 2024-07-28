@@ -191,6 +191,8 @@ class Gameboard {
                 this.destroyer.hit();
                 this.board[attackIndex] = 'X';
                 break;
+            case 'X':
+                break;
             default:
                 this.board[attackIndex] = 'M';
                 this.missedCoords.push(attackIndex);

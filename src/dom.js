@@ -1,15 +1,7 @@
 import { Gameboard, createPlayer } from "./gameboard";
 
-function test(box) {
-    box.addEventListener("click", () => {
-        console.log("this is a test");
-    });
-}
-
 // this function creates a new player's board on the DOM
 function createBoardOnDOM(player, gameboard, boardContainer) {
-    //const newPlayer = createPlayer(human);
-
     // initialize currLetter to the ascii character before A
     let currLetter = '@';
 
@@ -40,19 +32,8 @@ function createBoardOnDOM(player, gameboard, boardContainer) {
         newBox.classList.add('gameboard-item', 'gameboard-box');
         newBox.dataset.coord = currLetter + String(i % 10 + 1);
 
-        // add event listeners to each box that attacks a ship and updates the DOM
-        newBox.addEventListener("click", () => {
-            let playerBoxes = document.querySelectorAll(`${boardContainer} .gameboard-box`);
-            let playerBoxesArray = Array.from(playerBoxes);
-            player.receiveAttack(newBox.dataset.coord);
-            updateBoard(player, playerBoxesArray);
-        });
-        
-        test(newBox);
         gameboard.appendChild(newBox);
     }
-
-    //return newPlayer;
 }
 
 // this function places the ship on the DOM given the type of ship, the player, and the player's board
@@ -77,6 +58,40 @@ function placeShipOnDOM(ship, player, gameboard) {
     updateBoard(player, gameboard);
 }
 
+// this function adds event listeners to each of the boxes in the given array that run the game
+function addBoxListeners(player, playerBoxesArray, playerOneTurn) {
+    for (const box of playerBoxesArray) {
+        box.addEventListener("click", () => {
+            // call the receiveAttack function for the given player and update the board for that player
+            player.receiveAttack(box.dataset.coord);
+            updateBoard(player, playerBoxesArray);
+
+            let currBoard;
+
+            // get the opponents board to enable and disable the correct boards after each turn
+            if (playerOneTurn) {
+                currBoard = '.gameboard-container';
+            }
+            else {
+                currBoard = '.second-gameboard-container';
+            }
+
+            // disable opponent boxes to take turns
+            for (const box of playerBoxesArray) {
+                box.style.pointerEvents = 'none';
+            }
+
+            let currBoxes = document.querySelectorAll(`${currBoard} .gameboard-box`);
+            let currBoxesArray = Array.from(currBoxes);
+
+            // enable opponent boxes after taking turn
+            for (const box of currBoxesArray) {
+                box.style.pointerEvents = 'auto';
+            }
+        });
+    }
+}
+
 // this function updates the board to display hits and misses after turns
 function updateBoard(player, gameboard) {
     // iterate through the board to ensure the DOM display matches the class board
@@ -99,4 +114,4 @@ function updateBoard(player, gameboard) {
     }
 }
 
-export { createBoardOnDOM, placeShipOnDOM };
+export { createBoardOnDOM, placeShipOnDOM, addBoxListeners };

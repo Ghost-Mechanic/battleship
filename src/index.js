@@ -1,5 +1,5 @@
 import './style.css';
-import { createBoardOnDOM, placeShipOnDOM } from './dom';
+import { createBoardOnDOM, placeShipOnDOM, addBoxListeners } from './dom';
 import { createPlayer } from './gameboard';
 
 let playerOne = createPlayer(true); //createBoardOnDOM(true, document.querySelector('.gameboard-container'));
@@ -29,4 +29,11 @@ placeShipOnDOM('R', playerTwo, playerTwoBoxesArray);
 placeShipOnDOM('S', playerTwo, playerTwoBoxesArray);
 placeShipOnDOM('D', playerTwo, playerTwoBoxesArray);
 
+addBoxListeners(playerOne, playerTwoBoxesArray, true);
+addBoxListeners(playerTwo, playerOneBoxesArray, false);
+
+// disable boxes of playerOne to start off with
+for (const box of playerOneBoxesArray) {
+    box.style.pointerEvents = 'none';
+}
 let currPlayer = playerOne;
