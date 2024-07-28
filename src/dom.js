@@ -1,4 +1,4 @@
-import { Gameboard, createPlayer } from "./gameboard";
+import { Gameboard, createPlayer, coordToIndex } from "./gameboard";
 
 // this function creates a new player's board on the DOM
 function createBoardOnDOM(player, gameboard, boardContainer) {
@@ -81,40 +81,43 @@ function placeShipOnDOM(ship, player, gameboard) {
 function addBoxListeners(player, playerBoxesArray, playerOneTurn, playerOne, playerTwo) {
     for (const box of playerBoxesArray) {
         box.addEventListener("click", () => {
-            // call the receiveAttack function for the given player and update the board for that player
-            player.receiveAttack(box.dataset.coord);
-            updateBoard(player, playerBoxesArray);
+            // only run event listener if the box clicked on has not been attacked already
+            if (!player.usedCoords.includes(coordToIndex(box.dataset.coord))) {
+                // call the receiveAttack function for the given player and update the board for that player
+                player.receiveAttack(box.dataset.coord);
+                updateBoard(player, playerBoxesArray);
 
-            let currBoard;
+                let currBoard;
 
-            // get the opponents board to enable and disable the correct boards after each turn
-            if (playerOneTurn) {
-                currBoard = '.gameboard-container';
+                // get the opponents board to enable and disable the correct boards after each turn
+                if (playerOneTurn) {
+                    currBoard = '.gameboard-container';
+                }
+                else {
+                    currBoard = '.second-gameboard-container';
+                }
+
+                // disable opponent boxes to take turns
+                for (const box of playerBoxesArray) {
+                    box.style.pointerEvents = 'none';
+                }
+
+                let currBoxes = document.querySelectorAll(`${currBoard} .gameboard-box`);
+                let currBoxesArray = Array.from(currBoxes);
+
+                // enable opponent boxes after taking turn
+                for (const box of currBoxesArray) {
+                    box.style.pointerEvents = 'auto';
+                }
+
+                // handle victory if game is over
+                if (player.allShipsSunk()) {
+                    handleWin(playerOneTurn, currBoxesArray);
+                }
+
+                //displayPlayerBoard(!playerOneTurn, playerOne, playerTwo);
+                turnScreen(playerOneTurn, playerOne, playerTwo);
             }
-            else {
-                currBoard = '.second-gameboard-container';
-            }
-
-            // disable opponent boxes to take turns
-            for (const box of playerBoxesArray) {
-                box.style.pointerEvents = 'none';
-            }
-
-            let currBoxes = document.querySelectorAll(`${currBoard} .gameboard-box`);
-            let currBoxesArray = Array.from(currBoxes);
-
-            // enable opponent boxes after taking turn
-            for (const box of currBoxesArray) {
-                box.style.pointerEvents = 'auto';
-            }
-
-            // handle victory if game is over
-            if (player.allShipsSunk()) {
-                handleWin(playerOneTurn, currBoxesArray);
-            }
-
-            //displayPlayerBoard(!playerOneTurn, playerOne, playerTwo);
-            turnScreen(playerOneTurn, playerOne, playerTwo);
         });
     }
 }

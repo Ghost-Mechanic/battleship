@@ -46,6 +46,7 @@ class Gameboard {
         this.submarine = createSubmarine();
         this.destroyer = createDestroyer();
         this.missedCoords = [];
+        this.usedCoords = [];
     }
 
     // these functions place a ship at a given coordinate with a given orientation
@@ -174,28 +175,34 @@ class Gameboard {
             case 'C':
                 this.carrier.hit();
                 this.board[attackIndex] = 'X';
+                this.usedCoords.push(attackIndex);
                 break;
             case 'B':
                 this.battleship.hit();
                 this.board[attackIndex] = 'X';
+                this.usedCoords.push(attackIndex);
                 break;
             case 'R':
                 this.cruiser.hit();
                 this.board[attackIndex] = 'X';
+                this.usedCoords.push(attackIndex);
                 break;
             case 'S':
                 this.submarine.hit();
                 this.board[attackIndex] = 'X';
+                this.usedCoords.push(attackIndex);
                 break;
             case 'D':
                 this.destroyer.hit();
                 this.board[attackIndex] = 'X';
+                this.usedCoords.push(attackIndex);
                 break;
             case 'X':
                 break;
             default:
                 this.board[attackIndex] = 'M';
                 this.missedCoords.push(attackIndex);
+                this.usedCoords.push(attackIndex);
         }
     }
 
