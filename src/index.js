@@ -2,7 +2,7 @@ import './style.css';
 import { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard, addBoxListenersBot } from './dom';
 import { createPlayer } from './gameboard';
 
-let playerOne = createPlayer(true); //createBoardOnDOM(true, document.querySelector('.gameboard-container'));
+let playerOne = createPlayer(true);
 
 createBoardOnDOM(playerOne, document.querySelector('.gameboard-container'), '.gameboard-container');
 

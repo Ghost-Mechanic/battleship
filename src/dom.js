@@ -44,14 +44,18 @@ function displayPlayerBoard(playerOneTurn, playerOne, playerTwo) {
     const playerOneBoardArray = Array.from(playerOneBoard);
     const playerTwoBoardArray = Array.from(playerTwoBoard);
 
+    const playerTurnText = document.querySelector('.player-turn');
+
     // call updateBoard for the correct player's boards
     if (playerOneTurn) {
         updateBoard(playerOne, playerOneBoardArray);
         updateBoardForOpp(playerTwo, playerTwoBoardArray);
+        playerTurnText.textContent = 'It is Player 1\'s (left) turn';
     }
     else {
         updateBoard(playerTwo, playerTwoBoardArray);
         updateBoardForOpp(playerOne, playerOneBoardArray)
+        playerTurnText.textContent = 'It is Player 2\'s (right) turn';
     }
 }
 
