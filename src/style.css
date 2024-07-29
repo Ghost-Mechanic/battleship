@@ -1,14 +1,12 @@
-body {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
+body,
+#beginning-form,
 .text-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
+
+/* styling for both gameboards */
 
 .boards {
     display: flex;

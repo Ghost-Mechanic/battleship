@@ -1,4 +1,4 @@
-import { Gameboard, createPlayer, coordToIndex } from "./gameboard";
+import { coordToIndex } from "./gameboard";
 
 // this function creates a new player's board on the DOM
 function createBoardOnDOM(player, gameboard, boardContainer) {
@@ -60,8 +60,8 @@ function displayPlayerBoard(playerOneTurn, playerOne, playerTwo) {
 }
 
 // this function adds listeners to the boxes that allow the ships to be placed when clicked, and goes 
-// on to call itself for each ship in order from largest to smallest
-function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playerOne, playerTwo) {
+// on to call itself for each ship in order from largest to smallest, then starts up the game
+function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playerOne, playerTwo, human) {
     const currShip = document.querySelector('.current-ship');
 
     // define a function to handle the ship placement for each ship
@@ -78,57 +78,96 @@ function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playe
             switch (ship) {
                 case 'C':
                     currShip.textContent = 'Battleship (length 4)';
-                    placeShipListeners(player, playerBoxesArray, 'B', playerOneTurn, playerOne, playerTwo);
+                    placeShipListeners(player, playerBoxesArray, 'B', playerOneTurn, playerOne, playerTwo, human);
                     break;
                 case 'B':
                     currShip.textContent = 'Cruiser (length 3)';
-                    placeShipListeners(player, playerBoxesArray, 'R', playerOneTurn, playerOne, playerTwo);
+                    placeShipListeners(player, playerBoxesArray, 'R', playerOneTurn, playerOne, playerTwo, human);
                     break;
                 case 'R':
                     currShip.textContent = 'Submarine (length 3)';
-                    placeShipListeners(player, playerBoxesArray, 'S', playerOneTurn, playerOne, playerTwo);
+                    placeShipListeners(player, playerBoxesArray, 'S', playerOneTurn, playerOne, playerTwo, human);
                     break;
                 case 'S':
                     currShip.textContent = 'Destroyer (length 2)';
-                    placeShipListeners(player, playerBoxesArray, 'D', playerOneTurn, playerOne, playerTwo);
+                    placeShipListeners(player, playerBoxesArray, 'D', playerOneTurn, playerOne, playerTwo, human);
                     break;
             }
 
             // once player one is finished placing ships, let player 2 place theirs
-            if (ship === 'D' && playerOneTurn) {
-                document.querySelector('.gameboard-container').style.display = 'none';
-                createBoardOnDOM(playerTwo, document.querySelector('.second-gameboard-container'), '.second-gameboard-container');
-                document.querySelector('.second-gameboard-container').style.display = 'grid';
+            if (ship === 'D' && human) {
+                if (playerOneTurn) {
+                    document.querySelector('.gameboard-container').style.display = 'none';
+                    createBoardOnDOM(playerTwo, document.querySelector('.second-gameboard-container'), '.second-gameboard-container');
+                    document.querySelector('.second-gameboard-container').style.display = 'grid';
 
-                document.querySelector('.player-turn').textContent = 'Player 2: Place your';
-                currShip.textContent = 'Carrier (length 5)';
+                    document.querySelector('.player-turn').textContent = 'Player 2: Place your';
+                    currShip.textContent = 'Carrier (length 5)';
 
-                const playerTwoBoxes = document.querySelectorAll('.second-gameboard-container .gameboard-box');
-                const playerTwoBoxesArray = Array.from(playerTwoBoxes);
+                    const playerTwoBoxes = document.querySelectorAll('.second-gameboard-container .gameboard-box');
+                    const playerTwoBoxesArray = Array.from(playerTwoBoxes);
 
-                placeShipListeners(playerTwo, playerTwoBoxesArray, 'C', false, playerOne, playerTwo);
+                    placeShipListeners(playerTwo, playerTwoBoxesArray, 'C', false, playerOne, playerTwo, human);
+                }
+                // once both players are finished placing ships, proceed with the game
+                else {
+                    document.querySelector('.orientation-explanation').remove();
+                    document.querySelector('.checkbox-container').remove();
+                    document.querySelector('.current-ship').remove();
+                    document.querySelector('.gameboard-container').style.display = 'grid';
+
+                    const playerOneBoxes = document.querySelectorAll('.gameboard-container .gameboard-box');
+                    const playerOneBoxesArray = Array.from(playerOneBoxes);
+                    const playerTwoBoxes = document.querySelectorAll('.second-gameboard-container .gameboard-box');
+                    const playerTwoBoxesArray = Array.from(playerTwoBoxes);
+
+                    // add the box listeners to the boards to make the game run
+                    addBoxListeners(playerTwo, playerTwoBoxesArray, true, playerOne, playerTwo);
+                    addBoxListeners(playerOne, playerOneBoxesArray, false, playerOne, playerTwo);
+
+                    // make the opposing player's board invisible other than hits and misses
+                    displayPlayerBoard(true, playerOne, playerTwo);
+
+                    // disable boxes of player 1 to start off with player 1's turn
+                    for (const box of playerOneBoxesArray) {
+                        box.style.pointerEvents = 'none';
+                    }
+                }
             }
             // once both players are finished placing ships, proceed with the game
-            else if (ship === 'D' && !playerOneTurn) {
+            else if (ship === 'D' && !human) {
                 document.querySelector('.orientation-explanation').remove();
                 document.querySelector('.checkbox-container').remove();
                 document.querySelector('.current-ship').remove();
-                document.querySelector('.gameboard-container').style.display = 'grid';
 
-                const playerOneBoxes = document.querySelectorAll('.gameboard-container .gameboard-box');
-                const playerOneBoxesArray = Array.from(playerOneBoxes);
+                // create second board
+                createBoardOnDOM(playerTwo, document.querySelector('.second-gameboard-container'), '.second-gameboard-container');
+                document.querySelector('.second-gameboard-container').style.display = 'grid';
+
+                placeBotShips(playerTwo);
+
+                let possibleBotAttacks = [];
+
+                let currCoord;
+                
+                // fill the possibleBotAttacks array with all the coordinates
+                for (let i = 65; i <= 74; ++i) {
+                    for (let j = 1; j <= 10; ++j) {
+                        currCoord = String.fromCharCode(i) + String(j);
+                        possibleBotAttacks.push(currCoord);
+                    }
+                }
+
                 const playerTwoBoxes = document.querySelectorAll('.second-gameboard-container .gameboard-box');
                 const playerTwoBoxesArray = Array.from(playerTwoBoxes);
 
-                // add the box listeners to the boards to make the game run
-                addBoxListeners(playerTwo, playerTwoBoxesArray, true, playerOne, playerTwo);
-                addBoxListeners(playerOne, playerOneBoxesArray, false, playerOne, playerTwo);
+                addBoxListenersBot(playerTwo, playerTwoBoxesArray, true, playerOne, playerTwo, possibleBotAttacks);
 
                 // make the opposing player's board invisible other than hits and misses
                 displayPlayerBoard(true, playerOne, playerTwo);
 
-                // disable boxes of player 1 to start off with player 1's turn
-                for (const box of playerOneBoxesArray) {
+                // disable boxes of player 1 
+                for (const box of playerBoxesArray) {
                     box.style.pointerEvents = 'none';
                 }
             }
@@ -169,9 +208,46 @@ function placeShipOnDOM(ship, player, gameboard, coord) {
 
     // if the ship placement is invalid return false
     return false;
-    // use the correct symbol for the ship on the gameboard
-    //updateBoard(player, gameboard);
 }
+
+// this function has the bot randomly place ships on their board
+function placeBotShips(player) {
+    let possibleBotCoords = [];
+
+    let currCoord;
+    
+    // fill the possibleBotAttacks array with all the coordinates
+    for (let i = 65; i <= 74; ++i) {
+        for (let j = 1; j <= 10; ++j) {
+            currCoord = String.fromCharCode(i) + String(j);
+            possibleBotCoords.push(currCoord);
+        }
+    }
+
+    let randomCoord = possibleBotCoords[Math.floor(Math.random() * possibleBotCoords.length)];
+
+    // have the bot try placing its ships at random coordinates until it finds a valid placement for each ship
+    while (!player.placeCarrier(randomCoord, Math.random() < 0.5)) {
+        randomCoord = possibleBotCoords[Math.floor(Math.random() * possibleBotCoords.length)]
+    }
+
+    while (!player.placeBattleship(randomCoord, Math.random() < 0.5)) {
+        randomCoord = possibleBotCoords[Math.floor(Math.random() * possibleBotCoords.length)]
+    }
+
+    while (!player.placeCruiser(randomCoord, Math.random() < 0.5)) {
+        randomCoord = possibleBotCoords[Math.floor(Math.random() * possibleBotCoords.length)]
+    }
+
+    while (!player.placeSubmarine(randomCoord, Math.random() < 0.5)) {
+        randomCoord = possibleBotCoords[Math.floor(Math.random() * possibleBotCoords.length)]
+    }
+
+    while (!player.placeDestroyer(randomCoord, Math.random() < 0.5)) {
+        randomCoord = possibleBotCoords[Math.floor(Math.random() * possibleBotCoords.length)]
+    }
+}
+
 
 // this function adds event listeners to each of the boxes in the given array that run the game
 function addBoxListeners(player, playerBoxesArray, playerOneTurn, playerOne, playerTwo) {

@@ -6,6 +6,14 @@
     <title>Battleship</title>
 </head>
 <body>
+    <form id="beginning-form" action="">
+        <h3 class="form-description">Check the box below to play against a computer, leave it blank if you are playing against a human</h3>
+        <div class="computer-container">
+            <input type="checkbox" id="computer" name="computer">
+            <label for="computer">Play against computer</label>
+        </div>
+        <input type="submit" value="Play" id="submit-button">
+    </form>
     <div class="text-container">
         <h1 class="player-turn"></h1>
         <h2 class="current-ship"></h2>
