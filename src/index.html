@@ -6,7 +6,15 @@
     <title>Battleship</title>
 </head>
 <body>
-    <h1 class="player-turn"></h1>
+    <div class="text-container">
+        <h1 class="player-turn"></h1>
+        <h2 class="current-ship"></h2>
+        <p class="orientation-explanation">Ships will be oriented horizontally unless the "vertical" checkbox below is checked</p>
+        <div class="checkbox-container">
+            <input type="checkbox" id="vertical" name="vertical">
+            <label for="checkbox">Vertical</label>
+        </div>
+    </div>
     <div class="boards">
         <div class="gameboard-container">
         </div>

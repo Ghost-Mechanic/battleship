@@ -1,22 +1,35 @@
 import './style.css';
-import { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard, addBoxListenersBot } from './dom';
+import { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard, addBoxListenersBot, placeShipListeners } from './dom';
 import { createPlayer } from './gameboard';
 
 let playerOne = createPlayer(true);
+let playerTwo = createPlayer(true); 
 
 createBoardOnDOM(playerOne, document.querySelector('.gameboard-container'), '.gameboard-container');
 
-let playerOneBoxes = document.querySelectorAll(".gameboard-container .gameboard-box");
+document.querySelector('.second-gameboard-container').style.display = 'none';
+
+const playerTurn = document.querySelector('.player-turn');
+const currShip = document.querySelector('.current-ship');
+
+const playerOneBoxes = document.querySelectorAll(".gameboard-container .gameboard-box");
 let playerOneBoxesArray = Array.from(playerOneBoxes);
 
-// place ships on DOM for player one
-placeShipOnDOM('C', playerOne, playerOneBoxesArray);
-placeShipOnDOM('B', playerOne, playerOneBoxesArray);
-placeShipOnDOM('R', playerOne, playerOneBoxesArray);
-placeShipOnDOM('S', playerOne, playerOneBoxesArray);
-placeShipOnDOM('D', playerOne, playerOneBoxesArray);
+playerTurn.textContent = "Player 1: Place your";
+currShip.textContent = "Carrier (length 5)";
 
-let playerTwo = createPlayer(false); 
+placeShipListeners(playerOne, playerOneBoxesArray, 'C')
+// place ships on DOM for player one
+
+// placeShipOnDOM('C', playerOne, playerOneBoxesArray);
+// placeShipOnDOM('B', playerOne, playerOneBoxesArray);
+// placeShipOnDOM('R', playerOne, playerOneBoxesArray);
+// placeShipOnDOM('S', playerOne, playerOneBoxesArray);
+// placeShipOnDOM('D', playerOne, playerOneBoxesArray);
+
+if (false) {
+
+
 
 createBoardOnDOM(playerTwo, document.querySelector('.second-gameboard-container'), '.second-gameboard-container');
 
@@ -59,3 +72,5 @@ for (const box of playerOneBoxesArray) {
     box.style.pointerEvents = 'none';
 }
 let currPlayer = playerOne;
+
+}

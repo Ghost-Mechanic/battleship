@@ -59,26 +59,80 @@ function displayPlayerBoard(playerOneTurn, playerOne, playerTwo) {
     }
 }
 
+// this function adds listeners to the boxes that allow the ships to be placed when clicked, and goes 
+// on to call itself for each ship in order from largest to smallest
+function placeShipListeners(player, playerBoxesArray, ship) {
+    const currShip = document.querySelector('.current-ship');
+
+    // define a function to handle the ship placement for each ship
+    const handleShipPlacement = (e) => {
+        const box = e.target;
+
+        // only move on to the next ship placement if the current placement was valid
+        if (placeShipOnDOM(ship, player, playerBoxesArray, box.dataset.coord)) {
+            for (const box of playerBoxesArray) {
+                box.removeEventListener('click', handleShipPlacement);
+            }
+
+            // call the function with the correct ship in order
+            switch (ship) {
+                case 'C':
+                    currShip.textContent = 'Battleship (length 4)';
+                    placeShipListeners(player, playerBoxesArray, 'B');
+                    break;
+                case 'B':
+                    currShip.textContent = 'Cruiser (length 3)';
+                    placeShipListeners(player, playerBoxesArray, 'R');
+                    break;
+                case 'R':
+                    currShip.textContent = 'Submarine (length 3)';
+                    placeShipListeners(player, playerBoxesArray, 'S');
+                    break;
+                case 'S':
+                    currShip.textContent = 'Destroyer (length 2)';
+                    placeShipListeners(player, playerBoxesArray, 'D');
+                    break;
+                case 'D':
+            }
+        }
+    }
+    
+    // add event listener to each box
+    for (const box of playerBoxesArray) {
+        box.addEventListener('click', handleShipPlacement);
+    }
+}
+
 // this function places the ship on the DOM given the type of ship, the player, and the player's board
-function placeShipOnDOM(ship, player, gameboard) {
-    if (ship === 'C') {
-        player.placeCarrier('B4', true);
+function placeShipOnDOM(ship, player, gameboard, coord) {
+    const checkbox = document.querySelector("#vertical");
+
+    // if the ship placement is valid, place it and update the board and return true
+    if (ship === 'C' && player.placeCarrier(coord, checkbox.checked)) {
+        updateBoard(player, gameboard);
+        return true;
     }
-    else if (ship === 'B') {
-        player.placeBattleship('H2', false);
+    else if (ship === 'B' && player.placeBattleship(coord, checkbox.checked)) {
+        updateBoard(player, gameboard);
+        return true;
     }
-    else if (ship === 'R') {
-        player.placeCruiser('C7', false);
+    else if (ship === 'R' && player.placeCruiser(coord, checkbox.checked)) {
+        updateBoard(player, gameboard);
+        return true;
     }
-    else if (ship === 'S') {
-        player.placeSubmarine('E8', true);
+    else if (ship === 'S' && player.placeSubmarine(coord, checkbox.checked)) {
+        updateBoard(player, gameboard);
+        return true;
     }
-    else if (ship === 'D') {
-        player.placeDestroyer('I7', false);
+    else if (ship === 'D' && player.placeDestroyer(coord, checkbox.checked)) {
+        updateBoard(player, gameboard);
+        return true;
     }
 
+    // if the ship placement is invalid return false
+    return false;
     // use the correct symbol for the ship on the gameboard
-    updateBoard(player, gameboard);
+    //updateBoard(player, gameboard);
 }
 
 // this function adds event listeners to each of the boxes in the given array that run the game
@@ -277,4 +331,4 @@ function turnScreen(playerOneTurn, playerOne, playerTwo) {
     });
 }
 
-export { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard, addBoxListenersBot };
+export { createBoardOnDOM, placeShipOnDOM, addBoxListeners, displayPlayerBoard, addBoxListenersBot, placeShipListeners };
