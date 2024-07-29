@@ -163,7 +163,9 @@ function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playe
                 const playerTwoBoxes = document.querySelectorAll('.second-gameboard-container .gameboard-box');
                 const playerTwoBoxesArray = Array.from(playerTwoBoxes);
 
-                addBoxListenersBot(playerTwo, playerTwoBoxesArray, true, playerOne, playerTwo, possibleBotAttacks);
+                let attackQueue = [];
+
+                addBoxListenersBot(playerTwo, playerTwoBoxesArray, true, playerOne, playerTwo, possibleBotAttacks, attackQueue);
 
                 // make the opposing player's board invisible other than hits and misses
                 displayPlayerBoard(true, playerOne, playerTwo);
@@ -297,7 +299,7 @@ function addBoxListeners(player, playerBoxesArray, playerOneTurn, playerOne, pla
 }
 
 // this function adds the box listeners to the boards for playing against the computer
-function addBoxListenersBot(player, playerBoxesArray, playerOneTurn, playerOne, playerTwo, possibleBotAttacks) {
+function addBoxListenersBot(player, playerBoxesArray, playerOneTurn, playerOne, playerTwo, possibleBotAttacks, attackQueue) {
     for (const box of playerBoxesArray) {
         box.addEventListener("click", () => {
             // only run event listener if the box clicked on has not been attacked already
@@ -321,7 +323,7 @@ function addBoxListenersBot(player, playerBoxesArray, playerOneTurn, playerOne, 
                     }
                 }
                 else {
-                    botAttack(playerOne, possibleBotAttacks, currBoxesArray);
+                    botAttack(playerOne, possibleBotAttacks, currBoxesArray, attackQueue);
                 }
             }
         });
@@ -329,13 +331,54 @@ function addBoxListenersBot(player, playerBoxesArray, playerOneTurn, playerOne, 
 }
 
 // this function has the opposing bot player pick a random spot to attack from its array of possible attacks
-function botAttack(playerOne, possibleBotAttacks, currBoxesArray) {
-    // get random attack from array and remove it so that it is not repeated
-    const randomAttack = possibleBotAttacks[Math.floor(Math.random() * possibleBotAttacks.length)];
-    possibleBotAttacks.splice(possibleBotAttacks.indexOf(randomAttack), 1);
+function botAttack(playerOne, possibleBotAttacks, currBoxesArray, attackQueue) {
+    let attackCoord;
 
-    playerOne.receiveAttack(randomAttack);
+    // get random attack if attackQueue is empty
+    if (attackQueue.length === 0) {
+        attackCoord = possibleBotAttacks[Math.floor(Math.random() * possibleBotAttacks.length)];
+    }
+    // if attackQueue is not empty, take coords from it until a valid one is found
+    else {
+        attackCoord = attackQueue.shift();
+
+        while (!possibleBotAttacks.includes(attackCoord)) {
+            // break if no valid attack is found
+            if (attackQueue.length === 0) {
+                break;
+            }
+
+            attackCoord = attackQueue.shift();
+        }
+    }
+
+    // if after emptying the queue the attack coord still isn't valid, then choose a random coord from possibleBotAttacks
+    if (attackCoord == undefined) {
+        attackCoord = possibleBotAttacks[Math.floor(Math.random() * possibleBotAttacks.length)];
+    }
+
+    // if the current attack hits, then add adjacent attacks to the attackQueue if they are valid
+    if (playerOne.receiveAttack(attackCoord)) {
+        let attackCoordIndex = possibleBotAttacks.indexOf(attackCoord);
+
+        if (attackCoordIndex % 10 > 0) {
+            attackQueue.push(possibleBotAttacks[attackCoordIndex - 1]);
+        }
+        if (attackCoordIndex % 10 < 9) {
+            attackQueue.push(possibleBotAttacks[attackCoordIndex + 1]);
+        }
+        if (attackCoordIndex > 9) {
+            attackQueue.push(possibleBotAttacks[attackCoordIndex - 10]);
+        }
+        if (attackCoordIndex < 90) {
+            attackQueue.push(possibleBotAttacks[attackCoordIndex + 10]);
+        }
+    }
+
     updateBoard(playerOne, currBoxesArray);
+
+    // remove the current attack from the possible bot attacks array when it is used
+    possibleBotAttacks.splice(possibleBotAttacks.indexOf(attackCoord), 1);
 
     // handle victory if game is over
     if (playerOne.allShipsSunk()) {

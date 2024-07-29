@@ -177,33 +177,34 @@ class Gameboard {
                 this.carrier.hit();
                 this.board[attackIndex] = 'X';
                 this.usedCoords.push(attackIndex);
-                break;
+                return true;
             case 'B':
                 this.battleship.hit();
                 this.board[attackIndex] = 'X';
                 this.usedCoords.push(attackIndex);
-                break;
+                return true;
             case 'R':
                 this.cruiser.hit();
                 this.board[attackIndex] = 'X';
                 this.usedCoords.push(attackIndex);
-                break;
+                return true;
             case 'S':
                 this.submarine.hit();
                 this.board[attackIndex] = 'X';
                 this.usedCoords.push(attackIndex);
-                break;
+                return true;
             case 'D':
                 this.destroyer.hit();
                 this.board[attackIndex] = 'X';
                 this.usedCoords.push(attackIndex);
-                break;
+                return true;
             case 'X':
                 break;
             default:
                 this.board[attackIndex] = 'M';
                 this.missedCoords.push(attackIndex);
                 this.usedCoords.push(attackIndex);
+                return false;
         }
     }
 
