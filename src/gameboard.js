@@ -1,4 +1,4 @@
-import { Ship, createCarrier, createBattleship, createCruiser, createSubmarine, createDestroyer } from "./ship";
+import { createCarrier, createBattleship, createCruiser, createSubmarine, createDestroyer } from "./ship";
 
 // this function converts a coordinate to an index on the board
 function coordToIndex(coord) {

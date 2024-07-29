@@ -1,7 +1,7 @@
 import { coordToIndex } from "./gameboard";
 
 // this function creates a new player's board on the DOM
-function createBoardOnDOM(player, gameboard, boardContainer) {
+function createBoardOnDOM(gameboard) {
     // initialize currLetter to the ascii character before A
     let currLetter = '@';
 
@@ -98,7 +98,7 @@ function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playe
             if (ship === 'D' && human) {
                 if (playerOneTurn) {
                     document.querySelector('.gameboard-container').style.display = 'none';
-                    createBoardOnDOM(playerTwo, document.querySelector('.second-gameboard-container'), '.second-gameboard-container');
+                    createBoardOnDOM(document.querySelector('.second-gameboard-container'));
                     document.querySelector('.second-gameboard-container').style.display = 'grid';
 
                     document.querySelector('.player-turn').textContent = 'Player 2: Place your';
@@ -126,12 +126,14 @@ function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playe
                     addBoxListeners(playerOne, playerOneBoxesArray, false, playerOne, playerTwo);
 
                     // make the opposing player's board invisible other than hits and misses
-                    displayPlayerBoard(true, playerOne, playerTwo);
+                    //displayPlayerBoard(true, playerOne, playerTwo);
 
                     // disable boxes of player 1 to start off with player 1's turn
                     for (const box of playerOneBoxesArray) {
                         box.style.pointerEvents = 'none';
                     }
+
+                    turnScreen(false, playerOne, playerTwo);
                 }
             }
             // once both players are finished placing ships, proceed with the game
@@ -141,7 +143,7 @@ function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playe
                 document.querySelector('.current-ship').remove();
 
                 // create second board
-                createBoardOnDOM(playerTwo, document.querySelector('.second-gameboard-container'), '.second-gameboard-container');
+                createBoardOnDOM(document.querySelector('.second-gameboard-container'));
                 document.querySelector('.second-gameboard-container').style.display = 'grid';
 
                 placeBotShips(playerTwo);
@@ -409,6 +411,8 @@ function handleWin(playerOneTurn, currBoxesArray) {
         winMessage.textContent = 'Player 2 has won!';
     }
 
+    winMessage.style.fontSize = '4rem';
+
     document.body.appendChild(winMessage);
 }
 
@@ -426,7 +430,7 @@ function turnScreen(playerOneTurn, playerOne, playerTwo) {
     turnTitle.textContent = 'Pass Device';
 
     const turnDescription = document.createElement('h3');
-    turnDescription.textContent = 'Pass the device to the opposing player! When you are ready for the next turn click the button';
+    turnDescription.textContent = 'Pass the device to the opposing player! When you are ready for the next turn click the button.';
 
     const turnButton = document.createElement('button');
     turnButton.textContent = 'Next Turn';
