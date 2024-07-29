@@ -61,7 +61,7 @@ function displayPlayerBoard(playerOneTurn, playerOne, playerTwo) {
 
 // this function adds listeners to the boxes that allow the ships to be placed when clicked, and goes 
 // on to call itself for each ship in order from largest to smallest
-function placeShipListeners(player, playerBoxesArray, ship) {
+function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playerOne, playerTwo) {
     const currShip = document.querySelector('.current-ship');
 
     // define a function to handle the ship placement for each ship
@@ -78,21 +78,59 @@ function placeShipListeners(player, playerBoxesArray, ship) {
             switch (ship) {
                 case 'C':
                     currShip.textContent = 'Battleship (length 4)';
-                    placeShipListeners(player, playerBoxesArray, 'B');
+                    placeShipListeners(player, playerBoxesArray, 'B', playerOneTurn, playerOne, playerTwo);
                     break;
                 case 'B':
                     currShip.textContent = 'Cruiser (length 3)';
-                    placeShipListeners(player, playerBoxesArray, 'R');
+                    placeShipListeners(player, playerBoxesArray, 'R', playerOneTurn, playerOne, playerTwo);
                     break;
                 case 'R':
                     currShip.textContent = 'Submarine (length 3)';
-                    placeShipListeners(player, playerBoxesArray, 'S');
+                    placeShipListeners(player, playerBoxesArray, 'S', playerOneTurn, playerOne, playerTwo);
                     break;
                 case 'S':
                     currShip.textContent = 'Destroyer (length 2)';
-                    placeShipListeners(player, playerBoxesArray, 'D');
+                    placeShipListeners(player, playerBoxesArray, 'D', playerOneTurn, playerOne, playerTwo);
                     break;
-                case 'D':
+            }
+
+            // once player one is finished placing ships, let player 2 place theirs
+            if (ship === 'D' && playerOneTurn) {
+                document.querySelector('.gameboard-container').style.display = 'none';
+                createBoardOnDOM(playerTwo, document.querySelector('.second-gameboard-container'), '.second-gameboard-container');
+                document.querySelector('.second-gameboard-container').style.display = 'grid';
+
+                document.querySelector('.player-turn').textContent = 'Player 2: Place your';
+                currShip.textContent = 'Carrier (length 5)';
+
+                const playerTwoBoxes = document.querySelectorAll('.second-gameboard-container .gameboard-box');
+                const playerTwoBoxesArray = Array.from(playerTwoBoxes);
+
+                placeShipListeners(playerTwo, playerTwoBoxesArray, 'C', false, playerOne, playerTwo);
+            }
+            // once both players are finished placing ships, proceed with the game
+            else if (ship === 'D' && !playerOneTurn) {
+                document.querySelector('.orientation-explanation').remove();
+                document.querySelector('.checkbox-container').remove();
+                document.querySelector('.current-ship').remove();
+                document.querySelector('.gameboard-container').style.display = 'grid';
+
+                const playerOneBoxes = document.querySelectorAll('.gameboard-container .gameboard-box');
+                const playerOneBoxesArray = Array.from(playerOneBoxes);
+                const playerTwoBoxes = document.querySelectorAll('.second-gameboard-container .gameboard-box');
+                const playerTwoBoxesArray = Array.from(playerTwoBoxes);
+
+                // add the box listeners to the boards to make the game run
+                addBoxListeners(playerTwo, playerTwoBoxesArray, true, playerOne, playerTwo);
+                addBoxListeners(playerOne, playerOneBoxesArray, false, playerOne, playerTwo);
+
+                // make the opposing player's board invisible other than hits and misses
+                displayPlayerBoard(true, playerOne, playerTwo);
+
+                // disable boxes of player 1 to start off with player 1's turn
+                for (const box of playerOneBoxesArray) {
+                    box.style.pointerEvents = 'none';
+                }
             }
         }
     }

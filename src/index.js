@@ -5,8 +5,10 @@ import { createPlayer } from './gameboard';
 let playerOne = createPlayer(true);
 let playerTwo = createPlayer(true); 
 
+// begin by creating player 1's board on the DOM
 createBoardOnDOM(playerOne, document.querySelector('.gameboard-container'), '.gameboard-container');
 
+// make second board take up no space
 document.querySelector('.second-gameboard-container').style.display = 'none';
 
 const playerTurn = document.querySelector('.player-turn');
@@ -15,10 +17,11 @@ const currShip = document.querySelector('.current-ship');
 const playerOneBoxes = document.querySelectorAll(".gameboard-container .gameboard-box");
 let playerOneBoxesArray = Array.from(playerOneBoxes);
 
+// start off with the beginning text on the screen
 playerTurn.textContent = "Player 1: Place your";
 currShip.textContent = "Carrier (length 5)";
 
-placeShipListeners(playerOne, playerOneBoxesArray, 'C')
+placeShipListeners(playerOne, playerOneBoxesArray, 'C', true, playerOne, playerTwo)
 // place ships on DOM for player one
 
 // placeShipOnDOM('C', playerOne, playerOneBoxesArray);
