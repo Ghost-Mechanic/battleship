@@ -30,6 +30,7 @@ function createBoardOnDOM(gameboard) {
         // create new box for each coordinate and give the correct coordinates to its dataset
         let newBox = document.createElement('div');
         newBox.classList.add('gameboard-item', 'gameboard-box');
+        newBox.tabIndex = "0";
         newBox.dataset.coord = currLetter + String(i % 10 + 1);
 
         gameboard.appendChild(newBox);
@@ -328,6 +329,36 @@ function addBoxListenersBot(player, playerBoxesArray, playerOneTurn, playerOne, 
                 }
                 else {
                     botAttack(playerOne, possibleBotAttacks, currBoxesArray, attackQueue);
+                }
+            }
+        });
+
+        // add event listener for enter key for a11y
+        box.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                // only run event listener if the box clicked on has not been attacked already
+                if (!player.usedCoords.includes(coordToIndex(box.dataset.coord))) {
+                    // call the receiveAttack function for the given player and update the board for that player
+                    player.receiveAttack(box.dataset.coord);
+                    updateBoardForOpp(player, playerBoxesArray);
+
+                    let currBoxes = document.querySelectorAll('.gameboard-container .gameboard-box');
+                    let currBoxesArray = Array.from(currBoxes);
+
+                    // handle victory if game is over
+                    if (playerTwo.allShipsSunk()) {
+                        handleWin(playerOneTurn, currBoxesArray);
+
+                        // disable event listeners for the opposing board
+                        const opposingBoard = document.querySelectorAll('.second-gameboard-container .gameboard-box');
+                        const opposingBoardArray = Array.from(opposingBoard);
+                        for (const box of opposingBoardArray) {
+                            box.style.pointerEvents = 'none';
+                        }
+                    }
+                    else {
+                        botAttack(playerOne, possibleBotAttacks, currBoxesArray, attackQueue);
+                    }
                 }
             }
         });

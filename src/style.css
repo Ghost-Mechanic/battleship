@@ -101,3 +101,39 @@ button {
     color: black;
     font-size: 1.5rem;
 }
+
+@media (max-width: 1024px) {
+    .boards {
+        gap: 100px;
+    }
+
+    .gameboard-container,
+    .second-gameboard-container {
+        grid-template-columns: repeat(11, 32px);
+        grid-template-rows: repeat(11, 32px);
+    }
+}
+
+@media (max-width: 768px) {
+    .boards {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 430px) {
+    .game-title {
+        font-size: 3.5em;
+    }
+}
+
+@media (max-width: 380px) {
+    .game-title {
+        font-size: 3em;
+    }
+
+    .gameboard-container,
+    .second-gameboard-container {
+        grid-template-columns: repeat(11, 24px);
+        grid-template-rows: repeat(11, 24px);
+    }
+}
