@@ -114,6 +114,8 @@ function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playe
                     document.querySelector('.orientation-explanation').remove();
                     document.querySelector('.checkbox-container').remove();
                     document.querySelector('.current-ship').remove();
+                    document.querySelector('.note-one').remove();
+                    document.querySelector('.note-two').remove();
                     document.querySelector('.gameboard-container').style.display = 'grid';
 
                     const playerOneBoxes = document.querySelectorAll('.gameboard-container .gameboard-box');
@@ -141,6 +143,8 @@ function placeShipListeners(player, playerBoxesArray, ship, playerOneTurn, playe
                 document.querySelector('.orientation-explanation').remove();
                 document.querySelector('.checkbox-container').remove();
                 document.querySelector('.current-ship').remove();
+                document.querySelector('.note-one').remove();
+                document.querySelector('.note-two').remove();
 
                 // create second board
                 createBoardOnDOM(document.querySelector('.second-gameboard-container'));

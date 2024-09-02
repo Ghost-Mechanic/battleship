@@ -38,6 +38,8 @@ submitButton.addEventListener('click', (e) => {
     // start off with the beginning text on the screen
     playerTurn.textContent = "Player 1: Place your";
     currShip.textContent = "Carrier (length 5)";
+    document.querySelector('.note-one').style.display = "block";
+    document.querySelector('.note-two').style.display = "block";
 
     placeShipListeners(playerOne, playerOneBoxesArray, 'C', true, playerOne, playerTwo, playerTwo.human)
 });

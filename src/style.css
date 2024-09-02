@@ -46,6 +46,11 @@ button {
     margin: 0;
 }
 
+.note-one,
+.note-two {
+    display: none;
+}
+
 .orientation-explanation {
     font-size: 1.25rem;
 }
